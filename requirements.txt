@@ -1,0 +1,5 @@
+flask==2.0.1
+jsonclasses==2.8.0
+jsonclasses-pymongo==2.8.0
+jsonclasses-server==2.8.0
+inflection==0.5.1
