@@ -3,3 +3,4 @@ jsonclasses==2.8.1
 jsonclasses-pymongo==2.8.1
 jsonclasses-server==2.8.1
 inflection==0.5.1
+bcrypt==3.2.0

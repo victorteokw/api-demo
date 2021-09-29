@@ -4,7 +4,7 @@ from datetime import datetime
 from enum import Enum
 from jsonclasses import jsonclass, jsonenum, types
 from jsonclasses_pymongo import pymongo, Connection
-from jsonclasses_server import api, create_flask_server
+from jsonclasses_server import api, authorized, create_flask_server
 
 
 Connection.default.set_url('mongodb://localhost:27017/apidemodb')
@@ -16,13 +16,28 @@ class Sex(Enum):
     FEMALE = 2
 
 
+@authorized
 @api
 @pymongo
 @jsonclass
 class User:
     id: str = types.readonly.str.primary.mongoid.required
-    username: str = types.str.unique.required
-    email: Optional[str] = types.str.email.unique
+    username: str = types.str.unique.authidentity.required
+    email: Optional[str] = types.str.email.unique.authidentity
+    password: Optional[str] = types.writeonly.str.length(8, 16).salt.authbycheckpw
+    sex: Optional[Sex] = types.writeonce.enum(Sex)
+    created_at: datetime = types.readonly.datetime.tscreated.required
+    updated_at: datetime = types.readonly.datetime.tsupdated.required
+
+
+@authorized
+@api
+@pymongo
+@jsonclass
+class Admin:
+    id: str = types.readonly.str.primary.mongoid.required
+    username: str = types.str.unique.authidentity.required
+    password: Optional[str] = types.writeonly.str.length(8, 16).salt.authbycheckpw
     sex: Optional[Sex] = types.writeonce.enum(Sex)
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
