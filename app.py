@@ -25,6 +25,9 @@ class User:
     username: str = types.str.unique.authidentity.required
     email: Optional[str] = types.str.email.unique.authidentity
     password: Optional[str] = types.writeonly.str.length(8, 16).salt.authbycheckpw
+    # auth_code: Optional[str] = types.str.authby(
+    #     types.crossfetch('AuthorizationCode', 'email').fval('value').equal(types.passin)
+    # ).temp
     sex: Optional[Sex] = types.writeonce.enum(Sex)
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
@@ -71,6 +74,8 @@ class Product:
 class Category:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
+    parent: Optional[Category] = types.instanceof('Category').linkto
+    children: list[Category] = types.nonnull.listof('Category').linkedby('parent')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
