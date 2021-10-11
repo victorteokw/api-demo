@@ -1,6 +1,6 @@
 from __future__ import annotations
 from typing import Optional
-from datetime import datetime
+from datetime import datetime, timedelta
 from enum import Enum
 from jsonclasses import jsonclass, jsonenum, types
 from jsonclasses_pymongo import pymongo, Connection
@@ -52,7 +52,7 @@ class AuthorizationCode:
     phone_no: Optional[str] = types.str.digit.unique
     value: str = types.str.fsetonsave(types.randomdigits(4)).required
     created_at: datetime = types.readonly.datetime.tscreated.required
-    updated_at: datetime = types.readonly.datetime.tsupdated.required
+    updated_at: datetime = types.readonly.datetime.tsupdated.umininterval(timedelta(minutes=1)).required
 
 
 @api
