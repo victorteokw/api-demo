@@ -29,6 +29,7 @@ class User:
     #     types.crossfetch('AuthorizationCode', 'email').fval('value').equal(types.passin)
     # ).temp
     sex: Optional[Sex] = types.writeonce.enum(Sex)
+    orders: list[Order] = types.nonnull.listof('Order').linkedby('user')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -65,6 +66,7 @@ class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
     category: Category = types.instanceof('Category').linkto.required
+    orders: list[Order] = types.nonnull.listof('Order').linkedby('product')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -78,6 +80,19 @@ class Category:
     parent: Optional[Category] = types.instanceof('Category').linkto
     children: list[Category] = types.nonnull.listof('Category').linkedby('parent')
     products: list[Product] = types.nonnull.listof('Product').linkedby('category')
+    created_at: datetime = types.readonly.datetime.tscreated.required
+    updated_at: datetime = types.readonly.datetime.tsupdated.required
+
+
+@api
+@pymongo
+@jsonclass
+class Order:
+    id: str = types.readonly.str.primary.mongoid.required
+    quantity: int = types.int.default(1).min(1).required
+    price: float = types.float.min(0).required
+    user: User = types.instanceof('User').linkto.required
+    product: Product = types.instanceof('Product').linkto.required
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
