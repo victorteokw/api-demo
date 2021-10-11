@@ -43,6 +43,18 @@ class Admin:
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
 
+@api(enable='E')
+@pymongo
+@jsonclass
+class AuthorizationCode:
+    id: str = types.readonly.str.primary.mongoid.required
+    email: Optional[str] = types.str.email.unique
+    phone_no: Optional[str] = types.str.digit.unique
+    value: str = types.str.fsetonsave(types.randomdigits(4)).required
+    created_at: datetime = types.readonly.datetime.tscreated.required
+    updated_at: datetime = types.readonly.datetime.tsupdated.required
+
+
 @api
 @pymongo
 @jsonclass
