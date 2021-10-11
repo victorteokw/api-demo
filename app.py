@@ -64,6 +64,7 @@ class AuthorizationCode:
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
+    category: Category = types.instanceof('Category').linkto.required
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -76,6 +77,7 @@ class Category:
     name: str
     parent: Optional[Category] = types.instanceof('Category').linkto
     children: list[Category] = types.nonnull.listof('Category').linkedby('parent')
+    products: list[Product] = types.nonnull.listof('Product').linkedby('category')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
