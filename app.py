@@ -25,11 +25,12 @@ class User:
     username: str = types.str.unique.authidentity.required
     email: Optional[str] = types.str.email.unique.authidentity
     password: Optional[str] = types.writeonly.str.length(8, 16).salt.authbycheckpw
-    # auth_code: Optional[str] = types.str.authby(
-    #     types.crossfetch('AuthorizationCode', 'email').fval('value').equal(types.passin)
-    # ).temp
+    auth_code: Optional[str] = types.str.authby(
+        types.crossfetch('AuthorizationCode', 'email').fval('value').eq(types.passin)
+    ).temp
     sex: Optional[Sex] = types.writeonce.enum(Sex)
     orders: list[Order] = types.nonnull.listof('Order').linkedby('user')
+    favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('user')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -65,8 +66,9 @@ class AuthorizationCode:
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
-    category: Category = types.instanceof('Category').linkto.required
+    category: Category = types.objof('Category').linkto.required
     orders: list[Order] = types.nonnull.listof('Order').linkedby('product')
+    favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('product')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -77,7 +79,7 @@ class Product:
 class Category:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
-    parent: Optional[Category] = types.instanceof('Category').linkto
+    parent: Optional[Category] = types.objof('Category').linkto
     children: list[Category] = types.nonnull.listof('Category').linkedby('parent')
     products: list[Product] = types.nonnull.listof('Product').linkedby('category')
     created_at: datetime = types.readonly.datetime.tscreated.required
@@ -91,8 +93,19 @@ class Order:
     id: str = types.readonly.str.primary.mongoid.required
     quantity: int = types.int.default(1).min(1).required
     price: float = types.float.min(0).required
-    user: User = types.instanceof('User').linkto.required
-    product: Product = types.instanceof('Product').linkto.required
+    user: User = types.objof('User').linkto.required
+    product: Product = types.objof('Product').linkto.required
+    created_at: datetime = types.readonly.datetime.tscreated.required
+    updated_at: datetime = types.readonly.datetime.tsupdated.required
+
+
+@api
+@pymongo
+@jsonclass
+class Favorite:
+    id: str = types.readonly.str.primary.mongoid.required
+    user: User = types.objof('User').linkto.required
+    product: Product = types.objof('Product').linkto.required
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
