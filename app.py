@@ -18,19 +18,32 @@ class Sex(Enum):
     FEMALE = 2
 
 
+@jsonenum
+class UserType(Enum):
+    NORMAL = 1
+    WARNED = 2
+
+
 @authorized
 @api
 @pymongo
-@jsonclass
+@jsonclass(can_update=types.anyistrue([
+    types.getop.isthis,
+    types.getop.isobjof('Admin')
+]), can_delete=types.anyistrue([
+    types.getop.isthis,
+    types.getop.isobjof('Admin')
+]))
 class User:
     id: str = types.readonly.str.primary.mongoid.required
-    username: str = types.str.unique.authidentity.required
-    email: Optional[str] = types.str.email.unique.authidentity
-    password: Optional[str] = types.writeonly.str.length(8, 16).salt.authbycheckpw
+    username: str = types.str.unique.authidentity.canu(types.getop.isthis).required
+    email: Optional[str] = types.str.email.unique.authidentity.canu(types.getop.isthis)
+    password: Optional[str] = types.writeonly.str.length(8, 16).salt.authbycheckpw.canu(types.getop.isthis)
     auth_code: Optional[str] = types.str.authby(
         types.crossfetch('AuthorizationCode', 'email').fval('value').eq(types.passin)
     ).temp
     sex: Optional[Sex] = types.writeonce.enum(Sex)
+    user_type: UserType = types.enum(UserType).default(UserType.NORMAL).canu(types.getop.isobjof('Admin')).required
     orders: list[Order] = types.nonnull.listof('Order').linkedby('user')
     favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('user')
     selling_products: list[Product] = types.nonnull.listof('Product').linkedby('seller')
@@ -65,11 +78,14 @@ class AuthorizationCode:
 
 @api
 @pymongo
-@jsonclass
+@jsonclass(can_update=types.oneistrue([
+    types.getop.isowner,
+    types.getop.isobjof('Admin')
+]))
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
-    seller: User = types.objof('User').linkto.asopd.required
+    seller: User = types.objof('User').linkto.asopd.owner.required
     image: Optional[str] = types.uploader('image').str.url
     category: Category = types.objof('Category').linkto.required
     orders: list[Order] = types.nonnull.listof('Order').linkedby('product')
