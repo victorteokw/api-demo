@@ -2,10 +2,12 @@ from __future__ import annotations
 from typing import Optional
 from datetime import datetime, timedelta
 from enum import Enum
+from dotenv import load_dotenv
 from jsonclasses import jsonclass, jsonenum, types
 from jsonclasses_pymongo import pymongo, Connection
 from jsonclasses_server import api, authorized, create_flask_server
 
+load_dotenv()
 
 Connection.default.set_url('mongodb://localhost:27017/apidemodb')
 
@@ -66,6 +68,7 @@ class AuthorizationCode:
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
+    image: Optional[str] = types.uploader('image').str.url
     category: Category = types.objof('Category').linkto.required
     orders: list[Order] = types.nonnull.listof('Order').linkedby('product')
     favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('product')

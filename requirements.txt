@@ -4,3 +4,5 @@ jsonclasses-pymongo>=3.0.0,<4.0.0
 jsonclasses-server>=3.0.0,<4.0.0
 inflection==0.5.1
 bcrypt==3.2.0
+python-dotenv==0.19.1
+boto3>=1.18.61,<2.0.0

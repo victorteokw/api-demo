@@ -1,0 +1,15 @@
+{
+    "uploaders": {
+        "image": {
+            "client": "s3",
+            "config": {
+                "regionName": "environ['IMAGE_UPLOADER_REGION_NAME']",
+                "endpointURL": "environ['IMAGE_UPLOADER_ENDPOINT_URL']",
+                "awsAccessKeyId": "environ['IMAGE_UPLOADER_AWS_ACCESS_KEY_ID']",
+                "awsSecretAccessKey": "environ['IMAGE_UPLOADER_AWS_SECRET_ACCESS_KEY']",
+                "bucket": "environ['IMAGE_UPLOADER_BUCKET']",
+                "acl": "environ['IMAGE_UPLOADER_ACL']"
+            }
+        }
+    }
+}
