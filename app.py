@@ -33,6 +33,7 @@ class User:
     sex: Optional[Sex] = types.writeonce.enum(Sex)
     orders: list[Order] = types.nonnull.listof('Order').linkedby('user')
     favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('user')
+    selling_products: list[Product] = types.nonnull.listof('Product').linkedby('seller')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -68,6 +69,7 @@ class AuthorizationCode:
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
+    seller: User = types.objof('User').linkto.asopd.required
     image: Optional[str] = types.uploader('image').str.url
     category: Category = types.objof('Category').linkto.required
     orders: list[Order] = types.nonnull.listof('Order').linkedby('product')

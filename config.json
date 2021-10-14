@@ -1,4 +1,7 @@
 {
+    "operator": {
+        "secretKey": "environ['OPERATOR_SECRET_KEY']"
+    },
     "uploaders": {
         "image": {
             "client": "s3",
