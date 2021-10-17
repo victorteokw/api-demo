@@ -27,10 +27,10 @@ class UserType(Enum):
 @authorized
 @api
 @pymongo
-@jsonclass(can_update=types.anyistrue([
+@jsonclass(can_update=types.oneisvalid([
     types.getop.isthis,
     types.getop.isobjof('Admin')
-]), can_delete=types.anyistrue([
+]), can_delete=types.oneisvalid([
     types.getop.isthis,
     types.getop.isobjof('Admin')
 ]))
@@ -78,14 +78,14 @@ class AuthorizationCode:
 
 @api
 @pymongo
-@jsonclass(can_update=types.oneistrue([
-    types.getop.isowner,
+@jsonclass(can_update=types.oneisvalid([
+    #types.getop.isowner,
     types.getop.isobjof('Admin')
 ]))
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
-    seller: User = types.objof('User').linkto.asopd.owner.required
+    #seller: User = types.objof('User').linkto.asopd.owner.required
     image: Optional[str] = types.uploader('image').str.url
     category: Category = types.objof('Category').linkto.required
     orders: list[Order] = types.nonnull.listof('Order').linkedby('product')
@@ -125,8 +125,8 @@ class Order:
 @jsonclass
 class Favorite:
     id: str = types.readonly.str.primary.mongoid.required
-    user: User = types.objof('User').linkto.required
-    product: Product = types.objof('Product').linkto.required
+    user: User = types.objof('User').linkto.cindex('user_product').required
+    product: Product = types.objof('Product').linkto.cindex('user_product').required
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
