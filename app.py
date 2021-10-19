@@ -125,8 +125,8 @@ class Order:
 @jsonclass
 class Favorite:
     id: str = types.readonly.str.primary.mongoid.required
-    user: User = types.objof('User').linkto.cindex('user_product').required
-    product: Product = types.objof('Product').linkto.cindex('user_product').required
+    user: User = types.objof('User').linkto.cunique('user_product').required
+    product: Product = types.objof('Product').linkto.cunique('user_product').required
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
