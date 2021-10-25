@@ -79,13 +79,11 @@ class AuthorizationCode:
 @api
 @pymongo
 @jsonclass(can_update=types.oneisvalid([
-    #types.getop.isowner,
     types.getop.isobjof('Admin')
 ]))
 class Product:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
-    #seller: User = types.objof('User').linkto.asopd.owner.required
     image: Optional[str] = types.uploader('image').str.url
     category: Category = types.objof('Category').linkto.required
     orders: list[Order] = types.listof('Order').linkedby('product')
