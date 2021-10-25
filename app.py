@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Optional
+from typing import Optional, Annotated
 from datetime import datetime, timedelta
 from enum import Enum
 from dotenv import load_dotenv
-from jsonclasses import jsonclass, jsonenum, types
+from jsonclasses import jsonclass, jsonenum, types, linkedthru
 from jsonclasses_pymongo import pymongo, Connection
 from jsonclasses_server import api, authorized, create_flask_server
 
@@ -44,9 +44,9 @@ class User:
     ).temp
     sex: Optional[Sex] = types.writeonce.enum(Sex)
     user_type: UserType = types.enum(UserType).default(UserType.NORMAL).canu(types.getop.isobjof('Admin')).required
-    orders: list[Order] = types.nonnull.listof('Order').linkedby('user')
-    favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('user')
-    selling_products: list[Product] = types.nonnull.listof('Product').linkedby('seller')
+    orders: list[Order] = types.listof('Order').linkedby('user')
+    favorites: list[Favorite] = types.listof('Favorite').linkedby('user')
+    selling_products: list[Product] = types.listof('Product').linkedby('seller')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -88,8 +88,8 @@ class Product:
     #seller: User = types.objof('User').linkto.asopd.owner.required
     image: Optional[str] = types.uploader('image').str.url
     category: Category = types.objof('Category').linkto.required
-    orders: list[Order] = types.nonnull.listof('Order').linkedby('product')
-    favorites: list[Favorite] = types.nonnull.listof('Favorite').linkedby('product')
+    orders: list[Order] = types.listof('Order').linkedby('product')
+    favorites: list[Favorite] = types.listof('Favorite').linkedby('product')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
@@ -101,8 +101,8 @@ class Category:
     id: str = types.readonly.str.primary.mongoid.required
     name: str
     parent: Optional[Category] = types.objof('Category').linkto
-    children: list[Category] = types.nonnull.listof('Category').linkedby('parent')
-    products: list[Product] = types.nonnull.listof('Product').linkedby('category')
+    children: list[Category] = types.listof('Category').linkedby('parent')
+    products: list[Product] = types.listof('Product').linkedby('category')
     created_at: datetime = types.readonly.datetime.tscreated.required
     updated_at: datetime = types.readonly.datetime.tsupdated.required
 
