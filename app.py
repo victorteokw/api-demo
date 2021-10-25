@@ -1,9 +1,9 @@
 from __future__ import annotations
-from typing import Optional, Annotated
+from typing import Optional
 from datetime import datetime, timedelta
 from enum import Enum
 from dotenv import load_dotenv
-from jsonclasses import jsonclass, jsonenum, types, linkedthru
+from jsonclasses import jsonclass, jsonenum, types
 from jsonclasses_pymongo import pymongo, Connection
 from jsonclasses_server import api, authorized, create_flask_server
 
